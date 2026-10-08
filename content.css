@@ -1,0 +1,122 @@
+.xmd-hidden { display: none !important; }
+
+.xmd-root {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  font-family: inherit;
+  color: inherit;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.xmd-root > :first-child { margin-top: 0 !important; }
+.xmd-root > :last-child { margin-bottom: 0 !important; }
+
+.xmd-root p { margin: 0 0 .5em; }
+.xmd-root h1, .xmd-root h2, .xmd-root h3,
+.xmd-root h4, .xmd-root h5, .xmd-root h6 {
+  margin: .6em 0 .3em;
+  font-weight: 700;
+  line-height: 1.3;
+  color: inherit;
+}
+.xmd-root h1 { font-size: 1.35em; }
+.xmd-root h2 { font-size: 1.2em; padding-bottom: .2em; border-bottom: 1px solid rgba(127, 127, 127, .35); }
+.xmd-root h3 { font-size: 1.1em; }
+.xmd-root h4, .xmd-root h5, .xmd-root h6 { font-size: 1em; }
+
+.xmd-root a { color: rgb(29, 155, 240); text-decoration: none; }
+.xmd-root a:hover { text-decoration: underline; }
+
+.xmd-root ul, .xmd-root ol { margin: 0 0 .5em; padding-left: 1.5em; }
+.xmd-root ul { list-style: disc; }
+.xmd-root ol { list-style: decimal; }
+.xmd-root ul ul { list-style: circle; }
+.xmd-root li { margin: .1em 0; }
+.xmd-root li.xmd-task { list-style: none; margin-left: -1.2em; }
+.xmd-root li.xmd-task input { margin-right: .4em; vertical-align: middle; }
+
+.xmd-root blockquote {
+  margin: 0 0 .5em;
+  padding: .1em 0 .1em .8em;
+  border-left: 3px solid rgba(127, 127, 127, .5);
+  opacity: .85;
+}
+
+.xmd-root code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
+  font-size: .9em;
+  padding: .1em .35em;
+  border-radius: 4px;
+  background: rgba(127, 127, 127, .2);
+}
+.xmd-root pre {
+  margin: 0 0 .5em;
+  padding: .6em .8em;
+  border-radius: 8px;
+  background: rgba(127, 127, 127, .15);
+  overflow-x: auto;
+  white-space: pre;
+}
+.xmd-root pre code { padding: 0; background: none; font-size: .88em; }
+
+.xmd-root hr {
+  margin: .6em 0;
+  border: 0;
+  border-top: 1px solid rgba(127, 127, 127, .4);
+}
+
+.xmd-root .xmd-table-wrap { margin: 0 0 .5em; overflow-x: auto; }
+.xmd-root table { border-collapse: collapse; font-size: .95em; }
+.xmd-root th, .xmd-root td {
+  padding: .3em .6em;
+  border: 1px solid rgba(127, 127, 127, .4);
+}
+.xmd-root th { font-weight: 700; background: rgba(127, 127, 127, .12); }
+
+/* 基本ボタンスタイル */
+.xmd-toggle {
+  box-sizing: border-box;
+  padding: 1px 7px;
+  height: 19px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: inherit;
+  background: rgba(127, 127, 127, .1);
+  border: 1px solid rgba(127, 127, 127, .2);
+  border-radius: 9999px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  opacity: 0.18;
+  transition: opacity .2s ease, background-color .2s ease, border-color .2s ease;
+}
+
+article:hover .xmd-toggle,
+.xmd-toggle:hover {
+  opacity: 0.65;
+  background: rgba(127, 127, 127, .2);
+  border-color: rgba(127, 127, 127, .35);
+}
+
+/* ヘッダー内用（通常ポスト） */
+.xmd-toggle-header {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  align-self: center !important;
+  order: -9999 !important;
+  margin-right: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+/* 引用ポスト用（枠内の右上固定） */
+.xmd-toggle-quote {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  float: right !important;
+  clear: both !important;
+  margin: 0 0 4px 8px !important;
+}

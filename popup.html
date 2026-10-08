@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>X Markdown Renderer</title>
+  <style>
+    body { width: 260px; margin: 0; padding: 14px; font: 13px/1.5 system-ui, sans-serif; color: #0f1419; background: #fff; }
+    @media (prefers-color-scheme: dark) { body { color: #e7e9ea; background: #15202b; } }
+    h1 { margin: 0 0 10px; font-size: 14px; }
+    label { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0; cursor: pointer; }
+    small { display: block; opacity: .65; }
+  </style>
+</head>
+<body>
+  <h1>X Markdown Renderer</h1>
+  <label><input type="checkbox" id="enabled"><span>Markdown変換を有効にする</span></label>
+  <label><input type="checkbox" id="forceAll"><span>すべてのポストを変換<small>OFFの場合、Markdown記法を含むポストのみ変換</small></span></label>
+  <script src="popup.js"></script>
+</body>
+</html>
