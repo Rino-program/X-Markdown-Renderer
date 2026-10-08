@@ -58,6 +58,7 @@ X (旧Twitter) のポストに書かれたMarkdown記法を、美しく読みや
 ├── content.css     # レンダリング後のMarkdownスタイル・ボタンスタイル
 ├── popup.html      # 設定ポップアップUI
 ├── popup.js        # 設定保存・同期スクリプト
+├── LICENSE.txt     # ライセンス文
 └── README.md       # 本ドキュメント
 ```
 
@@ -70,6 +71,8 @@ X (旧Twitter) のポストに書かれたMarkdown記法を、美しく読みや
 - カスタマイズ / 最適化 (Customized by):
   - Rino-program
   - X (Twitter): @Rinoprogram
+- カスタマイズ / 最適化 時 coding:
+  - Gemini 3.8 flash
 
 📜 ライセンス
 MIT licence
