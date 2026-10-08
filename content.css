@@ -83,20 +83,22 @@
   font-weight: 600;
   line-height: 1;
   color: inherit;
-  background: rgba(127, 127, 127, .1);
-  border: 1px solid rgba(127, 127, 127, .2);
+  background: rgba(127, 127, 127, .08);
+  border: 1px solid rgba(127, 127, 127, .25);
   border-radius: 9999px;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
-  opacity: 0.18;
-  transition: opacity .2s ease, background-color .2s ease, border-color .2s ease;
+
+  /* ★ 通常時: 0.15 */
+  opacity: 0.15;
+  transition: opacity .15s ease, background-color .15s ease, border-color .15s ease;
 }
 
-article:hover .xmd-toggle,
+/* ★ ボタンそのものに触れた時だけ: 0.60 */
 .xmd-toggle:hover {
-  opacity: 0.65;
-  background: rgba(127, 127, 127, .2);
+  opacity: 0.60;
+  background: rgba(127, 127, 127, .18);
   border-color: rgba(127, 127, 127, .35);
 }
 
@@ -111,7 +113,7 @@ article:hover .xmd-toggle,
   flex-shrink: 0 !important;
 }
 
-/* 引用ポスト用（枠内の右上固定） */
+/* 引用ポスト・フォールバック用（右上に固定） */
 .xmd-toggle-quote {
   display: inline-flex !important;
   align-items: center;

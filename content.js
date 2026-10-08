@@ -5,7 +5,7 @@
   const settings = { enabled: true, forceAll: false };
   const showRaw = new WeakMap();
   const tweetButtons = new WeakMap();
-  const tweetRoots = new WeakMap(); // tweet -> 生成したroot（厳密な1対1管理）
+  const tweetRoots = new WeakMap();
 
   const el = (tag, cls) => {
     const e = document.createElement(tag);
@@ -231,18 +231,18 @@
     return out;
   }
 
-  /* ---------- 除外判定（投稿作成画面＆引用ポスト） ---------- */
+  /* ---------- 判定ヘルパー ---------- */
 
-  // ★ 投稿作成画面（コンポーザー）の中は絶対に触らない
+  // 本物の投稿入力欄（コンポーザー）の中だけを除外（詳細画面などは除外しない）
   function isInsideComposer(tweet) {
-    if (tweet.closest('[data-testid="tweetTextarea_0"]')) return true;
-    const dialog = tweet.closest('[role="dialog"]');
-    if (dialog && dialog.querySelector('[data-testid="tweetTextarea_0"], [data-testid="tweetButton"]')) {
-      return true;
-    }
-    return false;
+    return Boolean(
+      tweet.closest('[data-testid="tweetTextarea_0"]') ||
+      tweet.closest('[data-testid="tweetTextarea_0_label"]') ||
+      tweet.closest('div[data-testid="Drafts"]')
+    );
   }
 
+  // 引用ポストの中にいるかどうかの判定
   function isInsideQuote(tweet) {
     let cur = tweet.parentElement;
     while (cur && cur.tagName !== 'ARTICLE' && cur !== document.body) {
@@ -254,10 +254,20 @@
     return false;
   }
 
-  /* ---------- ボタンの配置処理 ---------- */
+  // 画面の種類（タイムライン・詳細・スレッド等）を問わずコンテナを取得
+  function getPostContainer(tweet) {
+    return (
+      tweet.closest('article') ||
+      tweet.closest('[data-testid="tweet"]') ||
+      tweet.closest('[role="article"]') ||
+      tweet.closest('[data-testid="cellInnerDiv"]') ||
+      tweet.parentElement?.parentElement?.parentElement ||
+      tweet.parentElement
+    );
+  }
 
-  function findGrokButton(article) {
-    const buttons = [...article.querySelectorAll('button, [role="button"]')];
+  function findGrokButton(container) {
+    const buttons = [...container.querySelectorAll('button, [role="button"]')];
     return buttons.find((el) => {
       const label = (el.getAttribute('aria-label') || '').toLowerCase();
       const testId = (el.getAttribute('data-testid') || '').toLowerCase();
@@ -265,58 +275,53 @@
     });
   }
 
+  /* ---------- ボタンの配置処理 ---------- */
+
   function attachButton(tweet, root, btn) {
+    // 1. 引用ポストの場合：枠内の右上に配置
     if (isInsideQuote(tweet)) {
       btn.className = 'xmd-toggle xmd-toggle-quote';
       (showRaw.get(tweet) ? tweet : root).prepend(btn);
       return;
     }
 
-    const article = tweet.closest('article') || tweet.closest('[data-testid="cellInnerDiv"]');
-    if (!article) return;
+    const container = getPostContainer(tweet);
+    if (container) {
+      btn.className = 'xmd-toggle xmd-toggle-header';
 
-    btn.className = 'xmd-toggle xmd-toggle-header';
-
-    const grokBtn = findGrokButton(article);
-    if (grokBtn) {
-      const parent = grokBtn.parentElement;
-      if (parent) {
-        parent.querySelectorAll('.xmd-toggle').forEach((b) => {
-          if (b !== btn) b.remove();
-        });
+      // 1. Grokボタンを探す
+      const grokBtn = findGrokButton(container);
+      if (grokBtn) {
+        grokBtn.before(btn);
+        return;
       }
-      grokBtn.before(btn);
-      return;
+
+      // 2. caret (…ボタン) を探す
+      const caret = container.querySelector('[data-testid="caret"]');
+      if (caret) {
+        const caretBtn = caret.closest('button, [role="button"]') || caret;
+        caretBtn.before(btn);
+        return;
+      }
     }
 
-    const caret = article.querySelector('[data-testid="caret"]');
-    if (caret) {
-      const caretBtn = caret.closest('button, [role="button"]') || caret;
-      const parent = caretBtn.parentElement;
-      if (parent) {
-        parent.querySelectorAll('.xmd-toggle').forEach((b) => {
-          if (b !== btn) b.remove();
-        });
-      }
-      caretBtn.before(btn);
-    }
+    // ★ 絶対保証フォールバック：ヘッダーが見つからない場合でも絶対に消さず右上に配置！
+    btn.className = 'xmd-toggle xmd-toggle-quote';
+    (showRaw.get(tweet) ? tweet : root).prepend(btn);
   }
 
   /* ---------- 適用 ---------- */
 
   function unrender(tweet) {
-    // 紐づくrootを安全に削除
     const root = tweetRoots.get(tweet);
     if (root) {
       root.remove();
       tweetRoots.delete(tweet);
     }
-    // 親に残っているかもしれないゾンビ要素も一掃
     const parent = tweet.parentElement;
     if (parent) {
       parent.querySelectorAll('.xmd-root').forEach((r) => r.remove());
     }
-
     const btn = tweetButtons.get(tweet);
     if (btn) {
       btn.remove();
@@ -344,7 +349,7 @@
       return;
     }
 
-    // ★ 投稿作成画面の中の要素なら完全にスキップ（暴走・増殖防止）
+    // 投稿作成画面の中の入力要素のみスキップ
     if (isInsideComposer(tweet)) {
       return;
     }
@@ -356,6 +361,16 @@
 
     // 正常に表示中ならスキップ
     if (tweet.dataset.xmdSig === sig && existing && existing.isConnected && existingBtn && existingBtn.isConnected) {
+      // Grokが遅れて生えてボタンが右側に回っていないかだけ補正
+      if (!isInsideQuote(tweet)) {
+        const container = getPostContainer(tweet);
+        if (container) {
+          const grok = findGrokButton(container);
+          if (grok && (existingBtn.compareDocumentPosition(grok) & Node.DOCUMENT_POSITION_PRECEDING)) {
+            grok.before(existingBtn);
+          }
+        }
+      }
       return;
     }
 
